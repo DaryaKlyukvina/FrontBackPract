@@ -275,6 +275,9 @@ footer {
   p { margin: 0; font-size: 14px; }
 }
 
+// ===========================
+// Шапка
+// ===========================
 header {
   @include component-theme($bg-dark, $text, $border);
   border-bottom: 1px solid $border;
@@ -303,7 +306,6 @@ header {
   }
 }
 
-// Theme overrides for header/footer
 body.light {
   header { @include component-theme($light-bg-dark, $light-text, $light-border); }
   footer { @include component-theme($light-bg-dark, $light-text-muted, $light-border); }
