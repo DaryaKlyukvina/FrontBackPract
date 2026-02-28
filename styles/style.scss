@@ -1,0 +1,222 @@
+// ===========================
+// Переменные цветов и шрифтов
+// ===========================
+
+// Основные цвета по умолчанию (темная тема)
+$bg-dark: hsl(210, 26%, 1%);
+$bg: hsl(208, 16%, 4%);
+$bg-light: hsl(208, 9%, 9%);
+$text: hsl(208, 46%, 95%);
+$text-muted: hsl(208, 7%, 70%);
+$highlight: hsl(208, 5%, 39%);
+$border: hsl(208, 7%, 28%);
+$border-muted: hsl(208, 10%, 18%);
+$primary: hsl(207, 76%, 70%);
+$secondary: hsl(30, 63%, 64%);
+$danger: hsl(9, 26%, 64%);
+$warning: hsl(52, 19%, 57%);
+$success: hsl(146, 17%, 59%);
+$info: hsl(217, 28%, 65%);
+$font-sans: 'Inter', sans-serif;
+
+// ===========================
+// Светлая тема
+// ===========================
+$light-bg-dark: hsl(208, 11%, 90%);
+$light-bg: hsl(208, 23%, 95%);
+$light-bg-light: hsl(208, 100%, 100%);
+$light-text: hsl(209, 32%, 5%);
+$light-text-muted: hsl(208, 7%, 28%);
+$light-highlight: hsl(208, 100%, 100%);
+$light-border: hsl(208, 4%, 50%);
+$light-border-muted: hsl(208, 6%, 62%);
+$light-primary: hsl(203, 98%, 24%);
+$light-secondary: hsl(36, 100%, 18%);
+$light-danger: hsl(9, 21%, 41%);
+$light-warning: hsl(52, 23%, 34%);
+$light-success: hsl(147, 19%, 36%);
+$light-info: hsl(217, 22%, 41%);
+
+// ===========================
+// Темная тема
+// ===========================
+$dark-bg-dark: hsl(212, 50%, 1%);
+$dark-bg: hsl(209, 32%, 5%);
+$dark-bg-light: hsl(208, 18%, 9%);
+$dark-text: hsl(208, 98%, 95%);
+$dark-text-muted: hsl(208, 14%, 70%);
+$dark-highlight: hsl(208, 10%, 39%);
+$dark-border: hsl(208, 13%, 28%);
+$dark-border-muted: hsl(208, 19%, 18%);
+$dark-primary: hsl(207, 76%, 70%);
+$dark-secondary: hsl(30, 63%, 64%);
+$dark-danger: hsl(9, 26%, 64%);
+$dark-warning: hsl(52, 19%, 57%);
+$dark-success: hsl(146, 17%, 59%);
+$dark-info: hsl(217, 28%, 65%);
+
+// ===========================
+// Основные стили (темная тема по умолчанию)
+// ===========================
+
+body {
+  font-family: $font-sans;
+  background-color: $bg;
+  color: $text;
+}
+
+p, span, li {
+  color: $text;
+}
+
+a {
+  color: $primary;
+  text-decoration: none;
+
+  &:hover {
+    color: $secondary;
+  }
+}
+
+button {
+  background-color: $primary;
+  color: $bg;
+  border: 1px solid $border;
+  border-radius: 5px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-family: $font-sans;
+  font-weight: 500;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+
+  &:hover {
+    background-color: $secondary;
+  }
+}
+
+hr {
+  border-color: $border-muted;
+}
+
+.highlight {
+  color: $highlight;
+}
+
+.text-muted {
+  color: $text-muted;
+}
+
+// ===========================
+// Карточки товаров
+// ===========================
+
+.card {
+  background-color: $bg-light;
+  border: 1px solid $border;
+  border-radius: 15px;
+  padding: 16px;
+  margin: 16px;
+  width: 200px;
+  height: 300px;
+  font-family: $font-sans;
+
+  .card-image {
+    width: 100%;
+    height: auto;
+    border-radius: 15px;
+  }
+}
+
+// ===========================
+// Светлая тема
+// ===========================
+
+body.light {
+  background-color: $light-bg;
+  color: $light-text;
+
+  p, span, li {
+    color: $light-text;
+  }
+
+  a {
+    color: $light-primary;
+
+    &:hover {
+      color: $light-secondary;
+    }
+  }
+
+  button {
+    background-color: $light-primary;
+    color: $light-bg;
+
+    &:hover {
+      background-color: $light-secondary;
+    }
+  }
+
+  hr {
+    border-color: $light-border-muted;
+  }
+
+  .highlight {
+    color: $light-highlight;
+  }
+
+  .text-muted {
+    color: $light-text-muted;
+  }
+
+  .card {
+    background-color: $light-bg-light;
+    border-color: $light-border;
+  }
+}
+
+// ===========================
+// Темная тема
+// ===========================
+
+body.dark {
+  background-color: $dark-bg;
+  color: $dark-text;
+
+  p, span, li {
+    color: $dark-text;
+  }
+
+  a {
+    color: $dark-primary;
+
+    &:hover {
+      color: $dark-secondary;
+    }
+  }
+
+  button {
+    background-color: $dark-primary;
+    color: $dark-bg;
+
+    &:hover {
+      background-color: $dark-secondary;
+    }
+  }
+
+  hr {
+    border-color: $dark-border-muted;
+  }
+
+  .highlight {
+    color: $dark-highlight;
+  }
+
+  .text-muted {
+    color: $dark-text-muted;
+  }
+
+  .card {
+    background-color: $dark-bg-light;
+    border-color: $dark-border;
+  }
+}
