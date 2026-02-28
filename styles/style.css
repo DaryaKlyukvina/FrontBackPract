@@ -2,6 +2,14 @@ body {
   font-family: "Inter", sans-serif;
   background-color: hsl(208, 16%, 4%);
   color: hsl(208, 46%, 95%);
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
 }
 
 p, span, li {
@@ -46,6 +54,7 @@ hr {
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
+  padding: 24px;
   justify-content: flex-start;
   align-items: flex-start;
 }
@@ -111,7 +120,7 @@ body.light button:hover {
   background-color: hsl(36, 100%, 18%);
 }
 body.light hr {
-  border-color: hsl(208, 6%, 62%);
+  border-color: hsl(208, 15%, 80%);
 }
 body.light .highlight {
   color: hsl(208, 100%, 100%);
@@ -121,7 +130,7 @@ body.light .text-muted {
 }
 body.light .card {
   background-color: hsl(208, 100%, 100%);
-  border-color: hsl(208, 4%, 50%);
+  border-color: hsl(206, 11%, 71%);
 }
 
 body.dark {
@@ -167,7 +176,13 @@ body.dark .card {
 
 footer {
   background-color: hsl(210, 26%, 1%);
-  border-top: 1px solid hsl(208, 7%, 28%);
+  color: hsl(208, 46%, 95%);
+  border-color: hsl(208, 7%, 28%);
+}
+footer p {
+  color: hsl(208, 7%, 70%);
+}
+footer {
   margin-top: 40px;
   padding: 24px 20px;
   font-family: "Inter", sans-serif;
@@ -176,23 +191,55 @@ footer {
 footer p {
   margin: 0;
   font-size: 14px;
-  color: hsl(208, 7%, 70%);
 }
 
+header {
+  background-color: hsl(210, 26%, 1%);
+  color: hsl(208, 46%, 95%);
+  border-color: hsl(208, 7%, 28%);
+  border-bottom: 1px solid hsl(208, 7%, 28%);
+  padding: 20px;
+  font-family: "Inter", sans-serif;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+header .logo {
+  font-size: 24px;
+  font-weight: bold;
+  color: hsl(207, 76%, 70%);
+  text-decoration: none;
+}
+header nav a {
+  color: hsl(208, 46%, 95%);
+  text-decoration: none;
+  margin-left: 20px;
+}
+header nav a:hover {
+  color: hsl(207, 76%, 70%);
+}
+
+body.light header {
+  background-color: hsl(208, 11%, 90%);
+  color: hsl(209, 32%, 5%);
+  border-color: hsl(206, 11%, 71%);
+}
 body.light footer {
   background-color: hsl(208, 11%, 90%);
-  border-top-color: hsl(208, 4%, 50%);
-}
-body.light footer p {
   color: hsl(208, 7%, 28%);
+  border-color: hsl(206, 11%, 71%);
 }
 
+body.dark header {
+  background-color: hsl(212, 50%, 1%);
+  color: hsl(208, 98%, 95%);
+  border-color: hsl(208, 13%, 28%);
+}
 body.dark footer {
   background-color: hsl(212, 50%, 1%);
-  border-top-color: hsl(208, 13%, 28%);
-}
-body.dark footer p {
   color: hsl(208, 14%, 70%);
+  border-color: hsl(208, 13%, 28%);
 }
 
 /*# sourceMappingURL=style.css.map */
