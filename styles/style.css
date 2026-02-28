@@ -42,20 +42,45 @@ hr {
   color: hsl(208, 7%, 70%);
 }
 
+.product-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
 .card {
   background-color: hsl(208, 9%, 9%);
   border: 1px solid hsl(208, 7%, 28%);
   border-radius: 15px;
   padding: 16px;
-  margin: 16px;
   width: 200px;
-  height: 300px;
+  height: 320px;
   font-family: "Inter", sans-serif;
+  display: flex;
+  flex-direction: column;
 }
 .card .card-image {
   width: 100%;
-  height: auto;
+  height: 250px;
+  object-fit: cover;
   border-radius: 15px;
+  margin-bottom: 12px;
+}
+.card .card-name {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 8px 0;
+}
+.card .card-info {
+  flex-grow: 1;
+  overflow: hidden;
+  position: relative;
+  font-size: 14px;
+  line-height: 1.4;
+  mask-image: linear-gradient(to bottom, black 70%, transparent);
+  -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent);
 }
 
 body.light {
@@ -138,6 +163,36 @@ body.dark .text-muted {
 body.dark .card {
   background-color: hsl(208, 18%, 9%);
   border-color: hsl(208, 13%, 28%);
+}
+
+footer {
+  background-color: hsl(210, 26%, 1%);
+  border-top: 1px solid hsl(208, 7%, 28%);
+  margin-top: 40px;
+  padding: 24px 20px;
+  font-family: "Inter", sans-serif;
+  text-align: center;
+}
+footer p {
+  margin: 0;
+  font-size: 14px;
+  color: hsl(208, 7%, 70%);
+}
+
+body.light footer {
+  background-color: hsl(208, 11%, 90%);
+  border-top-color: hsl(208, 4%, 50%);
+}
+body.light footer p {
+  color: hsl(208, 7%, 28%);
+}
+
+body.dark footer {
+  background-color: hsl(212, 50%, 1%);
+  border-top-color: hsl(208, 13%, 28%);
+}
+body.dark footer p {
+  color: hsl(208, 14%, 70%);
 }
 
 /*# sourceMappingURL=style.css.map */
