@@ -8,7 +8,12 @@ const toggleTheme = () => {
   }
 }
 
-// Установим начальную темму
+// установим начальную темму
 document.body.classList.add('dark');
 
 document.getElementById('theme-switch').addEventListener('click', toggleTheme);
+
+// API
+fetch('/products')
+  .then(r => r.json())
+  .then(data => console.log(data));
