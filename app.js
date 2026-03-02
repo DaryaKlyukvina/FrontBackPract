@@ -19,8 +19,9 @@ app.use(express.static(path.join(__dirname)));
 /* ========= ДАННЫЕ ========= */
 
 let products = [
-  { id: 1, name: 'Ноутбук', price: 80000 },
-  { id: 2, name: 'Телефон', price: 50000 }
+  { id: 1, name: 'Рыбов', price: 500 },
+  { id: 2, name: 'Рыбов2', price: 650 },
+  { id: 3, name: 'Рыбов3', price: 750 }
 ];
 
 
@@ -86,7 +87,131 @@ app.delete('/products/:id', (req, res) => {
 });
 
 
+/* ========= ВНЕШНИЙ API (FishWatch) ========= */
+
+// получить все виды рыб
+app.get('/fish', async (req, res) => {
+  try {
+    const response = await fetch('https://www.fishwatch.gov/api/species', {
+      headers: {
+        'Accept': 'application/json',
+        'User-Agent': 'nodejs-server'
+      }
+    });
+    const text = await response.text();
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch {
+      return res.status(502).json({ message: 'Внешний сервис вернул не JSON', raw: text.slice(0,200) });
+    }
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ message: 'Ошибка при получении данных', error: error.message });
+  }
+});
+
+// получить рыбу по названию
+app.get('/fish/search/:name', async (req, res) => {
+  try {
+    const response = await fetch(`https://www.fishwatch.gov/api/species?name=${req.params.name}`, {
+      headers: {
+        'Accept': 'application/json',
+        'User-Agent': 'nodejs-server'
+      }
+    });
+    const text = await response.text();
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch {
+      return res.status(502).json({ message: 'Внешний сервис вернул не JSON', raw: text.slice(0,200) });
+    }
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ message: 'Ошибка при поиске', error: error.message });
+  }
+});
+
+// получить информацию о конкретной рыбе по ID
+app.get('/fish/:id', async (req, res) => {
+  try {
+    const response = await fetch(`https://www.fishwatch.gov/api/species/${req.params.id}`, {
+      headers: {
+        'Accept': 'application/json',
+        'User-Agent': 'nodejs-server'
+      }
+    });
+    const text = await response.text();
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch {
+      return res.status(502).json({ message: 'Внешний сервис вернул не JSON', raw: text.slice(0,200) });
+    }
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ message: 'Ошибка при получении данных', error: error.message });
+  }
+});
+
+
 /* ========= START ========= */
+
+/* ========= Google Books (public Google API) ========= */
+
+// Поиск книг: /google/books?q=рыба
+app.get('/google/books', async (req, res) => {
+  const q = req.query.q;
+  if (!q) return res.status(400).json({ message: 'Query param q is required' });
+
+  try {
+    const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(q)}`);
+    const data = await response.json();
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ message: 'Ошибка при обращении к Google Books', error: error.message });
+  }
+});
+
+// Получить книгу по id: /google/books/:id
+app.get('/google/books/:id', async (req, res) => {
+  try {
+    const response = await fetch(`https://www.googleapis.com/books/v1/volumes/${encodeURIComponent(req.params.id)}`);
+    const data = await response.json();
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ message: 'Ошибка при обращении к Google Books', error: error.message });
+  }
+});
+
+/* ========= Open Library (public, no key) ========= */
+
+// Поиск в Open Library: /openlibrary/search?q=... 
+app.get('/openlibrary/search', async (req, res) => {
+  const q = req.query.q;
+  if (!q) return res.status(400).json({ message: 'Query param q is required' });
+
+  try {
+    const response = await fetch(`https://openlibrary.org/search.json?q=${encodeURIComponent(q)}`);
+    const data = await response.json();
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ message: 'Ошибка при обращении к Open Library', error: error.message });
+  }
+});
+
+// Получить работу (work) по id: /openlibrary/works/:id
+app.get('/openlibrary/works/:id', async (req, res) => {
+  try {
+    const response = await fetch(`https://openlibrary.org/works/${encodeURIComponent(req.params.id)}.json`);
+    if (!response.ok) return res.status(response.status).json({ message: 'Open Library returned error', status: response.status });
+    const data = await response.json();
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ message: 'Ошибка при обращении к Open Library', error: error.message });
+  }
+});
 
 app.listen(port, () => {
   console.log(`Сервер: http://localhost:${port}`);
