@@ -25,17 +25,32 @@
             placeholder="Поиск товара..."
             class="search-input"
         />
-        
         <button id="theme-switch">Темка</button>
     </header>
-
     <main>
         
         <section class="product-cards">
             <!-- Карточки будут загружены динамически из app.js -->
         </section>
     </main>
+    <div id="modal" class="modal hidden">
+        <div class="modal-content">
+            <h2 id="modal-title">Создание товара</h2>
 
+            <form id="product-form">
+            <input name="name" placeholder="Название" required>
+            <input name="category" placeholder="Категория">
+            <textarea name="description" placeholder="Описание"></textarea>
+            <input name="price" type="number" placeholder="Цена">
+            <input name="stock" type="number" placeholder="Количество">
+
+            <div class="modal-actions">
+                <button type="button" id="close-modal">Отмена</button>
+                <button type="submit">Сохранить</button>
+            </div>
+            </form>
+        </div>
+    </div>
     <footer>
         <p>Футер. Все права защищены и тд.</p>
     </footer>

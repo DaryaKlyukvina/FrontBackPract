@@ -18,69 +18,236 @@ document
    Загрузка товаров
 ========================= */
 
-let allProducts = [];
-
 const productCards = document.querySelector('.product-cards');
-const searchInput = document.getElementById('search-input');
 
+const modal = document.getElementById('modal');
+const form = document.getElementById('product-form');
+const createBtn = document.getElementById('create-btn');
+const closeModalBtn = document.getElementById('close-modal');
+const modalTitle = document.getElementById('modal-title');
 
+let editingId = null;
+
+async function loadProducts() {
+  const res = await fetch('/products');
+  const products = await res.json();
+
+  productCards.innerHTML = '';
+
+  // кнопка + карточка
+  productCards.appendChild(createAddCard());
+
+  products.forEach(p => {
+    productCards.appendChild(createCard(p));
+  });
+}
+
+/* =========================
+   ФУНКЦИЯ ДЛЯ ЗВЕЗДОЧЕК  
+========================= */
+function renderStars(rating = 0) {
+  const full = Math.round(rating);          // округляем до целого
+  return '⭐'.repeat(full) + '☆'.repeat(5 - full);
+}
 /* =========================
    РЕНДЕР КАРТОЧЕК
 ========================= */
 
-function renderProducts(products) {
-  productCards.innerHTML = '';
+function createCard(product) {
+  const card = document.createElement('div');
+  card.className = 'card';
 
-  products.forEach(product => {
-    const card = document.createElement('div');
-    card.className = 'card';
+  let stock = product.stock ?? 0;
+  let bought = 0;
 
-    const stars = '⭐'.repeat(Math.round(product.rating));
+  card.innerHTML = `
+    <img src="pics/tovar${product.id}.jpg" alt="${product.name}" class="card-image">
 
-    card.innerHTML = `
-      <img src="pics/tovar${product.id}.jpg" alt="${product.name}" class="card-image">
+    <h2>${product.name}</h2>
 
-      <h2 class="card-name">${product.name}</h2>
+    <p class="card-category">${product.category || '-'}</p>
+    <p class="card-info">${product.description || ''}</p>
 
-      <p class="card-price">${product.price} ₽</p>
-      <p class="card-category">Категория: ${product.category}</p>
-      <p class="card-quantity">В наличии: ${product.quantity}</p>
-      <p class="card-rating">${stars}</p>
+    <p class="card-price">Цена: ${product.price} ₽</p>
+    <p class="card-stock">В наличии: <span>${stock}</span></p>
 
+    <div class="stars">${renderStars(product.rating)}</div>
+
+    <div class="buy-block">
       <button class="buy-btn">Купить</button>
+    </div>
+
+    <div class="card-actions">
+      <button class="edit-btn">Ред</button>
+      <button class="delete-btn">🗑</button>
+    </div>
+  `;
+
+  const stockSpan = card.querySelector('.card-stock span');
+  const buyBlock = card.querySelector('.buy-block');
+
+
+
+  /* =====================
+     ПОКУПКА
+  ===================== */
+
+  function renderCounter() {
+    buyBlock.innerHTML = `
+      <div class="counter">
+        <button class="minus">−</button>
+        <span>${bought}</span>
+        <button class="plus">+</button>
+      </div>
     `;
 
-    productCards.appendChild(card);
-  });
+    const minus = buyBlock.querySelector('.minus');
+    const plus = buyBlock.querySelector('.plus');
+    const count = buyBlock.querySelector('span');
+
+    plus.onclick = () => {
+      if (stock <= 0) return;
+      bought++;
+      stock--;
+      count.textContent = bought;
+      stockSpan.textContent = stock;
+    };
+
+    minus.onclick = () => {
+      if (bought <= 0) return;
+
+      bought--;
+      stock++;
+      count.textContent = bought;
+      stockSpan.textContent = stock;
+
+      // Если куплено 0, вернуть кнопку "Купить"
+      if (bought === 0) {
+        buyBlock.innerHTML = `<button class="buy-btn">Купить</button>`;
+        buyBlock.querySelector('.buy-btn').onclick = renderCounter;
+      }
+    };
+  }
+
+  buyBlock.querySelector('.buy-btn').onclick = renderCounter;
+
+
+
+  /* =====================
+     CRUD
+  ===================== */
+
+  card.querySelector('.edit-btn').onclick = () => openEdit(product);
+  card.querySelector('.delete-btn').onclick = () => deleteProduct(product.id);
+
+  return card;
 }
 
 
 /* =========================
-   ЗАГРУЗКА С СЕРВЕРА
+   ДОБАВЛЕНИЕ
 ========================= */
 
-fetch('/products')
-  .then(r => r.json())
-  .then(products => {
-    allProducts = products;
-    renderProducts(allProducts);
-  });
+function createAddCard() {
+  const card = document.createElement('div');
+  card.className = 'card add-card';
+  card.innerHTML = '+';
+  card.onclick = openCreate;
+  return card;
+}
 
+
+  /* =========================
+   MODAL
+========================= */
+
+function openCreate() {
+  editingId = null;
+  modalTitle.textContent = 'Создание товара';
+  form.reset();
+  modal.classList.remove('hidden');
+}
+
+function openEdit(product) {
+  editingId = product.id;
+  modalTitle.textContent = 'Редактирование';
+
+  form.name.value = product.name;
+  form.category.value = product.category;
+  form.description.value = product.description;
+  form.price.value = product.price;
+  form.stock.value = product.stock;
+
+  modal.classList.remove('hidden');
+}
+
+closeModalBtn.onclick = () => modal.classList.add('hidden');
+
+
+
+/* =========================
+   SUBMIT
+========================= */
+
+form.onsubmit = async (e) => {
+  e.preventDefault();
+
+  const data = Object.fromEntries(new FormData(form));
+
+  if (editingId) {
+    await fetch(`/products/${editingId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+  } else {
+    await fetch('/products', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+  }
+
+  modal.classList.add('hidden');
+  loadProducts();
+};
+
+
+/* =========================
+   DELETE
+========================= */
+
+async function deleteProduct(id) {
+  if (!confirm('Удалить товар?')) return;
+
+  await fetch(`/products/${id}`, { method: 'DELETE' });
+  loadProducts();
+}
+
+
+/* =========================
+   INIT
+========================= */
+
+loadProducts();
 
 /* =========================
    ПОИСК
 ========================= */
-
 searchInput.addEventListener('input', () => {
   const query = searchInput.value.toLowerCase();
 
+  // фильтруем уже загруженные товары
   const filtered = allProducts.filter(product =>
     product.name.toLowerCase().includes(query) ||
-    product.category.toLowerCase().includes(query)
+    (product.category && product.category.toLowerCase().includes(query))
   );
 
-  renderProducts(filtered);
-})
-  .catch(error =>
-    console.error('Ошибка при загрузке товаров:', error)
-  );
+  // очищаем контейнер и рендерим 
+  productCards.innerHTML = '';
+  productCards.appendChild(createAddCard()); // кнопка +
+
+  filtered.forEach(product => {
+    productCards.appendChild(createCard(product));
+  });
+});

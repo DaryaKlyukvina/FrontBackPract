@@ -19,11 +19,11 @@ app.use(express.static(path.join(__dirname)));
 /* ========= ДАННЫЕ ========= */
 
 let products = [
-  { id: 1, name: 'Рыбов', price: 500, category: 'Рыба', quantity: 12, rating: 4.5 },
-  { id: 2, name: 'Акул', price: 650, category: 'Хищники', quantity: 3, rating: 4.9 },
-  { id: 3, name: 'Медуз', price: 750, category: 'Морские', quantity: 25, rating: 4.2 },
-  { id: 4, name: 'Килька', price: 599, category: 'Консервы', quantity: 40, rating: 4.0 },
-  { id: 5, name: 'Крекер', price: 100000, category: 'Легендарные', quantity: 1, rating: 5.0 }
+  { id: 1, name: 'Рыбов', price: 500, category: 'Рыба', description: 'Вкусный, поверьте на слово', rating: 4.5, stock: 123},
+  { id: 2, name: 'Акул', price: 650, category: 'Хищники', description: '...Вроде не кусается', rating: 4.9, stock: 67},
+  { id: 3, name: 'Медуз', price: 750, category: 'Морские', description: 'Это не желе', rating: 4.2, stock: 52 },
+  { id: 4, name: 'Килька', price: 599, category: 'Консервы', description: 'Не в томатном соусе', rating: 4.0, stock: 110 },
+  { id: 5, name: 'Крекер', price: 100000, category: 'Легендарные', description: 'Хрустит', rating: 5.0, stock: 1 }
 ];
 
 
@@ -45,17 +45,16 @@ app.get('/products/:id', (req, res) => {
 
 // создать
 app.post('/products', (req, res) => {
-  const { name, price } = req.body;
-
-  // Валидация на пустые значения
-  if (!name || !price) {
-    return res.status(400).json({ message: 'Название и цена обязательны' });
-  }
+  const { name, category, description, price, stock, rating } = req.body;
 
   const newProduct = {
     id: Date.now(),
     name,
-    price
+    category,
+    description,
+    price: Number(price),
+    stock: Number(stock),
+    rating: Number(rating)
   };
 
   products.push(newProduct);
@@ -65,19 +64,24 @@ app.post('/products', (req, res) => {
 // обновить
 app.patch('/products/:id', (req, res) => {
   const product = products.find(p => p.id == req.params.id);
-
   if (!product) return res.status(404).json({ message: 'Не найдено' });
 
-  // валидация на пустые значения
-  if (req.body.name !== undefined && !req.body.name) {
-    return res.status(400).json({ message: 'Название не может быть пусто' });
-  }
-  if (req.body.price !== undefined && !req.body.price) {
-    return res.status(400).json({ message: 'Цена не может быть пусто' });
-  }
+  const { name, price, category, description, stock } = req.body;
 
-  if (req.body.name !== undefined) product.name = req.body.name;
-  if (req.body.price !== undefined) product.price = req.body.price;
+  if (name !== undefined && !name)
+    return res.status(400).json({ message: 'Название не может быть пусто' });
+
+  if (price !== undefined && price <= 0)
+    return res.status(400).json({ message: 'Цена должна быть > 0' });
+
+  if (stock !== undefined && stock < 0)
+    return res.status(400).json({ message: 'Количество не может быть отрицательным' });
+
+  if (name !== undefined) product.name = name;
+  if (price !== undefined) product.price = price;
+  if (category !== undefined) product.category = category;
+  if (description !== undefined) product.description = description;
+  if (stock !== undefined) product.stock = stock;
 
   res.json(product);
 });
@@ -87,78 +91,6 @@ app.delete('/products/:id', (req, res) => {
   products = products.filter(p => p.id != req.params.id);
   res.json({ message: 'Удалено' });
 });
-
-
-/* ========= ВНЕШНИЙ API (FishWatch) ========= */
-
-// получить все виды рыб
-app.get('/fish', async (req, res) => {
-  try {
-    const response = await fetch('https://www.fishwatch.gov/api/species', {
-      headers: {
-        'Accept': 'application/json',
-        'User-Agent': 'nodejs-server'
-      }
-    });
-    const text = await response.text();
-    let data;
-    try {
-      data = JSON.parse(text);
-    } catch {
-      return res.status(502).json({ message: 'Внешний сервис вернул не JSON', raw: text.slice(0,200) });
-    }
-    res.json(data);
-  } catch (error) {
-    res.status(500).json({ message: 'Ошибка при получении данных', error: error.message });
-  }
-});
-
-// получить рыбу по названию
-app.get('/fish/search/:name', async (req, res) => {
-  try {
-    const response = await fetch(`https://www.fishwatch.gov/api/species?name=${req.params.name}`, {
-      headers: {
-        'Accept': 'application/json',
-        'User-Agent': 'nodejs-server'
-      }
-    });
-    const text = await response.text();
-    let data;
-    try {
-      data = JSON.parse(text);
-    } catch {
-      return res.status(502).json({ message: 'Внешний сервис вернул не JSON', raw: text.slice(0,200) });
-    }
-    res.json(data);
-  } catch (error) {
-    res.status(500).json({ message: 'Ошибка при поиске', error: error.message });
-  }
-});
-
-// получить информацию о конкретной рыбе по ID
-app.get('/fish/:id', async (req, res) => {
-  try {
-    const response = await fetch(`https://www.fishwatch.gov/api/species/${req.params.id}`, {
-      headers: {
-        'Accept': 'application/json',
-        'User-Agent': 'nodejs-server'
-      }
-    });
-    const text = await response.text();
-    let data;
-    try {
-      data = JSON.parse(text);
-    } catch {
-      return res.status(502).json({ message: 'Внешний сервис вернул не JSON', raw: text.slice(0,200) });
-    }
-    res.json(data);
-  } catch (error) {
-    res.status(500).json({ message: 'Ошибка при получении данных', error: error.message });
-  }
-});
-
-
-/* ========= START ========= */
 
 /* ========= Google Books (public Google API) ========= */
 
