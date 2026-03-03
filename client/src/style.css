@@ -1,0 +1,423 @@
+body {
+  font-family: "Inter", sans-serif;
+  background-color: hsl(208, 16%, 4%);
+  color: hsl(208, 46%, 95%);
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+}
+
+p, span, li {
+  color: hsl(208, 46%, 95%);
+}
+
+a {
+  color: hsl(207, 76%, 70%);
+  text-decoration: none;
+}
+a:hover {
+  color: hsl(30, 63%, 64%);
+}
+
+button {
+  background-color: hsl(207, 76%, 70%);
+  color: hsl(208, 16%, 4%);
+  border: 1px solid hsl(208, 7%, 28%);
+  border-radius: 5px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+}
+button:hover {
+  background-color: hsl(30, 63%, 64%);
+}
+
+hr {
+  border-color: hsl(208, 10%, 18%);
+}
+
+.highlight {
+  color: hsl(208, 5%, 39%);
+}
+
+.text-muted {
+  color: hsl(208, 7%, 70%);
+}
+
+.product-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+  padding: 24px;
+}
+
+.card {
+  background-color: hsl(208, 9%, 9%);
+  border: 1px solid hsl(208, 7%, 28%);
+  border-radius: 15px;
+  padding: 16px;
+  width: 250px;
+  height: fit-content;
+  font-family: "Inter", sans-serif;
+  flex-direction: column;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+.card .card-image {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  border-radius: 15px;
+  margin-bottom: 12px;
+}
+.card .card-name {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 8px 0;
+}
+.card .card-price {
+  font-weight: 700;
+  font-size: 18px;
+  margin-bottom: 6px;
+}
+.card .card-category,
+.card .card-stock,
+.card .card-rating {
+  font-size: 10px;
+  color: hsl(217, 28%, 65%);
+  margin-bottom: 4px;
+}
+.card .card-rating {
+  letter-spacing: 2px;
+}
+.card .buy-btn {
+  margin: 10px 0px 0;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid hsl(208, 7%, 28%);
+  display: flex;
+  font-weight: 600;
+  cursor: pointer;
+}
+.card .buy-btn:hover {
+  background: hsl(30, 63%, 64%);
+}
+.card .buy-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.card .edit-btn {
+  margin: 10px 0px 0;
+  border-radius: 8px;
+  border: 1px solid hsl(208, 7%, 28%);
+  display: flex;
+  cursor: pointer;
+}
+.card .edit-btn:hover {
+  background: hsl(30, 63%, 64%);
+}
+.card .edit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.card .delete-btn {
+  margin: 10px 0px 0;
+  border-radius: 8px;
+  border: 1px solid hsl(208, 7%, 28%);
+  display: flex;
+  cursor: pointer;
+}
+.card .delete-btn:hover {
+  background: hsl(30, 63%, 64%);
+}
+.card .delete-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.card {
+  /* ========================== */
+}
+.card .card-info {
+  flex-grow: 1;
+  overflow: hidden;
+  position: relative;
+  font-size: 14px;
+  line-height: 1.4;
+  mask-image: linear-gradient(to bottom, black 70%, transparent);
+  -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent);
+}
+
+/* ========================== */
+.add-card {
+  width: 250px;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  cursor: pointer;
+  opacity: 0.5;
+}
+.add-card:hover {
+  opacity: 1;
+}
+
+.card-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: #1e1e1e;
+  padding: 20px;
+  border-radius: 12px;
+  width: 300px;
+}
+
+.counter {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+}
+.counter button {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.stars {
+  margin: 6px 0;
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+body.light {
+  background-color: hsl(208, 23%, 95%);
+  color: hsl(209, 32%, 5%);
+}
+body.light p, body.light span, body.light li {
+  color: hsl(209, 32%, 5%);
+}
+body.light a {
+  color: hsl(203, 98%, 24%);
+  text-decoration: none;
+}
+body.light a:hover {
+  color: hsl(36, 100%, 18%);
+}
+body.light button {
+  background-color: hsl(203, 98%, 24%);
+  color: hsl(208, 23%, 95%);
+  border: 1px solid hsl(208, 7%, 28%);
+  border-radius: 5px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+}
+body.light button:hover {
+  background-color: hsl(36, 100%, 18%);
+}
+body.light hr {
+  border-color: hsl(208, 15%, 80%);
+}
+body.light .highlight {
+  color: hsl(208, 100%, 100%);
+}
+body.light .text-muted {
+  color: hsl(208, 7%, 28%);
+}
+body.light .card {
+  background-color: hsl(208, 100%, 100%);
+  border-color: hsl(206, 11%, 71%);
+}
+
+body.dark {
+  background-color: hsl(209, 32%, 5%);
+  color: hsl(208, 98%, 95%);
+}
+body.dark p, body.dark span, body.dark li {
+  color: hsl(208, 98%, 95%);
+}
+body.dark a {
+  color: hsl(207, 76%, 70%);
+  text-decoration: none;
+}
+body.dark a:hover {
+  color: hsl(30, 63%, 64%);
+}
+body.dark button {
+  background-color: hsl(207, 76%, 70%);
+  color: hsl(209, 32%, 5%);
+  border: 1px solid hsl(208, 7%, 28%);
+  border-radius: 5px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+}
+body.dark button:hover {
+  background-color: hsl(30, 63%, 64%);
+}
+body.dark hr {
+  border-color: hsl(208, 19%, 18%);
+}
+body.dark .highlight {
+  color: hsl(208, 10%, 39%);
+}
+body.dark .text-muted {
+  color: hsl(208, 14%, 70%);
+}
+body.dark .card {
+  background-color: hsl(208, 18%, 9%);
+  border-color: hsl(208, 13%, 28%);
+}
+
+footer {
+  background-color: hsl(210, 26%, 1%);
+  color: hsl(208, 46%, 95%);
+  border-color: hsl(208, 7%, 28%);
+}
+footer p {
+  color: hsl(208, 7%, 70%);
+}
+footer {
+  margin-top: 40px;
+  padding: 24px 20px;
+  font-family: "Inter", sans-serif;
+  text-align: center;
+}
+footer p {
+  margin: 0;
+  font-size: 14px;
+}
+
+header {
+  background-color: hsl(210, 26%, 1%);
+  color: hsl(208, 46%, 95%);
+  border-color: hsl(208, 7%, 28%);
+  border-bottom: 1px solid hsl(208, 7%, 28%);
+  padding: 20px;
+  font-family: "Inter", sans-serif;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+header .logo {
+  font-size: 24px;
+  font-weight: bold;
+  color: hsl(207, 76%, 70%);
+  text-decoration: none;
+}
+header nav a {
+  color: hsl(208, 46%, 95%);
+  text-decoration: none;
+  margin-left: 20px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-weight: 500;
+  text-transform: uppercase;
+  transition: background-color 0.2s, color 0.2s;
+}
+header nav a:hover {
+  background-color: rgba(120.36, 184.314, 236.64, 0.2);
+  color: hsl(207, 76%, 70%);
+}
+header nav a.active {
+  color: hsl(207, 76%, 70%);
+  background-color: rgba(120.36, 184.314, 236.64, 0.3);
+}
+
+.search-input {
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-family: "Inter", sans-serif;
+  border: 1px solid;
+  width: 280px;
+}
+.search-input:focus {
+  outline: none;
+  transform: translateY(-1px);
+}
+
+body.light header {
+  background-color: hsl(208, 11%, 90%);
+  color: hsl(209, 32%, 5%);
+  border-color: hsl(206, 11%, 71%);
+}
+body.light footer {
+  background-color: hsl(208, 11%, 90%);
+  color: hsl(208, 7%, 28%);
+  border-color: hsl(206, 11%, 71%);
+}
+body.light .search-input {
+  background-color: hsl(208, 100%, 100%);
+  color: hsl(209, 32%, 5%);
+  border-color: hsl(206, 11%, 71%);
+}
+body.light .search-input::placeholder {
+  color: hsl(208, 7%, 28%);
+}
+body.light .search-input:focus {
+  border-color: hsl(203, 98%, 24%);
+}
+
+body.dark header {
+  background-color: hsl(212, 50%, 1%);
+  color: hsl(208, 98%, 95%);
+  border-color: hsl(208, 13%, 28%);
+}
+body.dark footer {
+  background-color: hsl(212, 50%, 1%);
+  color: hsl(208, 14%, 70%);
+  border-color: hsl(208, 13%, 28%);
+}
+body.dark .search-input {
+  background-color: hsl(208, 18%, 9%);
+  color: hsl(208, 98%, 95%);
+  border-color: hsl(208, 13%, 28%);
+}
+body.dark .search-input::placeholder {
+  color: hsl(208, 14%, 70%);
+}
+body.dark .search-input:focus {
+  border-color: hsl(207, 76%, 70%);
+}
+
+body.light .modal-content {
+  background-color: hsl(208, 100%, 100%);
+  color: hsl(209, 32%, 5%);
+  border-color: hsl(206, 11%, 71%);
+}
+
+body.dark .modal-content {
+  background-color: hsl(208, 18%, 9%);
+  color: hsl(208, 98%, 95%);
+  border-color: hsl(208, 13%, 28%);
+}

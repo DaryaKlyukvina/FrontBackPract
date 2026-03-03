@@ -29,7 +29,7 @@ const modalTitle = document.getElementById('modal-title');
 let editingId = null;
 
 async function loadProducts() {
-  const res = await fetch('/products');
+  const res = await fetch('http://localhost:3000/products');
   const products = await res.json();
 
   productCards.innerHTML = '';
@@ -195,13 +195,13 @@ form.onsubmit = async (e) => {
   const data = Object.fromEntries(new FormData(form));
 
   if (editingId) {
-    await fetch(`/products/${editingId}`, {
+    await fetch(`http://localhost:3000/products/${editingId}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     });
   } else {
-    await fetch('/products', {
+    await fetch('http://localhost:3000/products', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
@@ -220,7 +220,7 @@ form.onsubmit = async (e) => {
 async function deleteProduct(id) {
   if (!confirm('Удалить товар?')) return;
 
-  await fetch(`/products/${id}`, { method: 'DELETE' });
+  await fetch(`http://localhost:3000/products/${id}`, { method: 'DELETE' });
   loadProducts();
 }
 
@@ -234,6 +234,7 @@ loadProducts();
 /* =========================
    ПОИСК
 ========================= */
+const searchInput = document.getElementById('search-input');
 searchInput.addEventListener('input', () => {
   const query = searchInput.value.toLowerCase();
 
