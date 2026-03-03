@@ -8,12 +8,13 @@ export default function Modal({ product, onClose, onSave }) {
     description: '',
     price: '',
     stock: '',
-    rating: ''
+    rating: '',
+    image: ''
   });
 
   useEffect(() => {
     if (product) setFormData(product);
-    else setFormData({ name:'', category:'', description:'', price:'', stock:'', rating:'' });
+    else setFormData({ name:'', category:'', description:'', price:'', stock:'', rating:'', image:'' });
   }, [product]);
 
   const handleChange = e => {
@@ -31,6 +32,7 @@ export default function Modal({ product, onClose, onSave }) {
       <div className="modal-content">
         <h2>{product ? 'Редактирование' : 'Создание товара'}</h2>
         <form id="product-form" onSubmit={handleSubmit}>
+          <input name="image" placeholder="Ссылка на изображение (URL или /pics/...)" value={formData.image || ''} onChange={handleChange}/>
           <input name="name" placeholder="Название" value={formData.name} onChange={handleChange} required />
           <input name="category" placeholder="Категория" value={formData.category} onChange={handleChange} />
           <input name="description" placeholder="Описание" value={formData.description} onChange={handleChange} />

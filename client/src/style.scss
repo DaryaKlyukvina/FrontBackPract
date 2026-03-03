@@ -110,6 +110,9 @@ $dark-info: hsl(217, 28%, 65%);
 // Основные стили (темная тема по умолчанию)
 // ===========================
 
+html, body {
+  height: 100%;
+}
 
 body {
   font-family: $font-sans;
@@ -433,7 +436,8 @@ body.dark {
 // ===========================
 footer {
   @include component-theme($bg-dark, $text, $border, $text-muted);
-  margin-top: 40px;
+
+  margin-top: auto;
   padding: 24px 20px;
   font-family: $font-sans;
   text-align: center;
@@ -441,6 +445,11 @@ footer {
   p { margin: 0; font-size: 14px; }
 }
 
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
 // ===========================
 // Шапка
 // ===========================
@@ -540,5 +549,132 @@ body.light {
 body.dark {
   .modal-content {
     @include component-theme($dark-bg-light, $dark-text, $dark-border);
+  }
+}
+
+/* =========================
+   MODAL (theme-aware)
+========================= */
+
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(3px);
+}
+
+/* окно */
+.modal-content {
+  width: 420px;
+  max-width: 95%;
+  padding: 26px;
+  border-radius: 14px;
+  border: 1px solid;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  font-family: $font-sans;
+  transition: 0.25s;
+}
+
+/* =========================
+   FORM LAYOUT
+========================= */
+
+#product-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* =========================
+   INPUTS
+========================= */
+
+#product-form input,
+#product-form textarea {
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid;
+  font-family: $font-sans;
+  font-size: 14px;
+  transition: 0.2s;
+  outline: none;
+}
+
+#product-form input:focus,
+#product-form textarea:focus {
+  border-color: $primary;
+  box-shadow: 0 0 0 2px rgba($primary, 0.25);
+}
+
+/* =========================
+   BUTTONS (через твой миксин)
+========================= */
+
+#product-form button[type="submit"] {
+  @include button-style($primary, $bg-dark, lighten($primary, 8%));
+}
+
+#product-form button[type="button"] {
+  @include button-style(transparent, $text-muted, $highlight);
+}
+
+
+/* =====================================================
+   LIGHT THEME
+===================================================== */
+
+body.light {
+
+  .modal-content {
+    @include component-theme(
+      $light-bg-light,
+      $light-text,
+      $light-border
+    );
+  }
+
+  #product-form input,
+  #product-form textarea {
+    @include component-theme(
+      $light-bg,
+      $light-text,
+      $light-border-muted
+    );
+  }
+}
+
+
+/* =====================================================
+   DARK THEME
+===================================================== */
+
+body.dark {
+
+  .modal-content {
+    @include component-theme(
+      $dark-bg-light,
+      $dark-text,
+      $dark-border
+    );
+  }
+
+  #product-form input,
+  #product-form textarea {
+    @include component-theme(
+      $dark-bg,
+      $dark-text,
+      $dark-border-muted
+    );
+  }
+
+  #product-form input::placeholder,
+  #product-form textarea::placeholder {
+    color: $dark-text-muted;
   }
 }

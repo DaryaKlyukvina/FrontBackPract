@@ -20,11 +20,11 @@ app.use(express.static(path.join(__dirname)));
    ДАННЫЕ
 ========================= */
 let products = [
-  { id: 1, name: 'Рыбов', price: 500, category: 'Рыба', description: 'Вкусный, поверьте на слово', rating: 4.5, stock: 123 },
-  { id: 2, name: 'Акул', price: 650, category: 'Хищники', description: '...Вроде не кусается', rating: 4.9, stock: 67 },
-  { id: 3, name: 'Медуз', price: 750, category: 'Морские', description: 'Это не желе', rating: 4.2, stock: 52 },
-  { id: 4, name: 'Килька', price: 599, category: 'Консервы', description: 'Не в томатном соусе', rating: 4.0, stock: 110 },
-  { id: 5, name: 'Крекер', price: 100000, category: 'Легендарные', description: 'Хрустит', rating: 5.0, stock: 1 },
+  { id: '1a', name: 'Рыбов', price: 500, category: 'Рыба', description: 'Вкусный, поверьте на слово', rating: 4, stock: 123 },
+  { id: '2a', name: 'Акул', price: 650, category: 'Хищники', description: '...Вроде не кусается', rating: 4, stock: 67 },
+  { id: '3a', name: 'Медуз', price: 750, category: 'Морские', description: 'Это не желе', rating: 3, stock: 52 },
+  { id: '4a', name: 'Килька', price: 599, category: 'Консервы', description: 'Не в томатном соусе', rating: 4, stock: 110 },
+  { id: '5a', name: 'Крекер', price: 100000, category: 'Легендарные', description: 'Хрустит', rating: 5, stock: 1 },
 ];
 
 /* =========================
@@ -164,8 +164,8 @@ app.get('/products/:id', (req, res) => {
  *               $ref: '#/components/schemas/Product'
  */
 app.post('/products', (req, res) => {
-  const { name, price, category, description, stock, rating } = req.body;
-  const newProduct = { id: nanoid(6), name, price, category, description, stock, rating };
+  const { name, price, category, description, stock, rating, image } = req.body;
+  const newProduct = { id: nanoid(6), name, price, category, description, stock, rating, image };
   products.push(newProduct);
   res.status(201).json(newProduct);
 });
@@ -213,16 +213,11 @@ app.post('/products', (req, res) => {
  *         description: Товар не найден
  */
 app.patch('/products/:id', (req, res) => {
-  const product = products.find(p => p.id === req.params.id);
-  if (!product) return res.status(404).json({ message: 'Товар не найден' });
+  const product = products.find(p => p.id == req.params.id);
 
-  const { name, price, category, description, stock, rating } = req.body;
-  if (name !== undefined) product.name = name;
-  if (price !== undefined) product.price = price;
-  if (category !== undefined) product.category = category;
-  if (description !== undefined) product.description = description;
-  if (stock !== undefined) product.stock = stock;
-  if (rating !== undefined) product.rating = rating;
+  if (!product) return res.status(404).json({ message: 'Не найдено' });
+
+  Object.assign(product, req.body);
 
   res.json(product);
 });

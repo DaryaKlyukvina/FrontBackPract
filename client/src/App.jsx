@@ -78,7 +78,7 @@ function App() {
 
     return (
       <div className="card">
-        <img src={`pics/tovar${product.id}.jpg`} alt={product.name} className="card-image" />
+        <img src={product.image || `/pics/tovar${product.id}.jpg`} alt={product.name} className="card-image"/>
         <h2 className='card-name'>{product.name}</h2>
         <p className="card-category">{product.category || '-'}</p>
         <div className="stars">{renderStars(product.rating)}</div>
