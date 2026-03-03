@@ -372,15 +372,15 @@ header {
 .search-input {
   padding: 10px 14px;
   border-radius: 8px;
-  border: 1px solid $border;
-  background: $bg-light;
-  color: $text;
   font-family: $font-sans;
+  border: 1px solid;
   width: 280px;
+
+  transition: .10s;
 
   &:focus {
     outline: none;
-    border-color: $primary;
+    transform: translateY(-1px);
   }
 }
 
@@ -388,9 +388,33 @@ header {
 body.light {
   header { @include component-theme($light-bg-dark, $light-text, $light-border); }
   footer { @include component-theme($light-bg-dark, $light-text-muted, $light-border); }
+
+  .search-input {
+    @include component-theme($light-bg-light, $light-text, $light-border);
+
+    &::placeholder {
+      color: $light-text-muted;
+    }
+
+    &:focus {
+      border-color: $light-primary;
+    }
+  }
 }
 
 body.dark {
   header { @include component-theme($dark-bg-dark, $dark-text, $dark-border); }
   footer { @include component-theme($dark-bg-dark, $dark-text-muted, $dark-border); }
+
+  .search-input {
+    @include component-theme($dark-bg-light, $dark-text, $dark-border);
+
+    &::placeholder {
+      color: $dark-text-muted;
+    }
+
+    &:focus {
+      border-color: $dark-primary;
+    }
+  }
 }
