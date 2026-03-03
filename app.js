@@ -19,9 +19,11 @@ app.use(express.static(path.join(__dirname)));
 /* ========= ДАННЫЕ ========= */
 
 let products = [
-  { id: 1, name: 'Рыбов', price: 500 },
-  { id: 2, name: 'Рыбов2', price: 650 },
-  { id: 3, name: 'Рыбов3', price: 750 }
+  { id: 1, name: 'Рыбов', price: 500, category: 'Рыба', quantity: 12, rating: 4.5 },
+  { id: 2, name: 'Акул', price: 650, category: 'Хищники', quantity: 3, rating: 4.9 },
+  { id: 3, name: 'Медуз', price: 750, category: 'Морские', quantity: 25, rating: 4.2 },
+  { id: 4, name: 'Килька', price: 599, category: 'Консервы', quantity: 40, rating: 4.0 },
+  { id: 5, name: 'Крекер', price: 100000, category: 'Легендарные', quantity: 1, rating: 5.0 }
 ];
 
 

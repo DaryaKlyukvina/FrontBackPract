@@ -152,12 +152,16 @@ hr {
 // ===========================
 
 .product-cards {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
+//  display: flex;
+//  flex-wrap: wrap;
+//  gap: 16px;
+//  padding: 24px;
+// justify-content: flex-start;
+//  align-items: flex-start;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
   padding: 24px;
-  justify-content: flex-start;
-  align-items: flex-start;
 }
 
 .card {
@@ -166,10 +170,16 @@ hr {
   border-radius: 15px;
   padding: 16px;
   width: 250px;
-  height: 380px;
+  height: fit-content;
   font-family: $font-sans;
-  display: flex;
   flex-direction: column;
+
+  transition: transform .15s ease, box-shadow .15s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0,0,0,.15);
+  }
 
   .card-image {
     width: 100%;
@@ -184,6 +194,48 @@ hr {
     font-weight: 600;
     margin: 8px 0;
   }
+
+  .card-price {
+    font-weight: 700;
+    font-size: 18px;
+    margin-bottom: 6px;
+  }
+
+  .card-category,
+  .card-quantity,
+  .card-rating {
+    font-size: 10px;
+    color: $info;
+    margin-bottom: 4px;
+  }
+
+  .card-rating {
+    letter-spacing: 2px;
+  }
+
+  .buy-btn {
+    margin-top: auto;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid $border;
+    background: $primary;
+    color: $bg;
+    display: flex;
+    font-weight: 600;
+    cursor: pointer;
+    transition: .15s;
+
+    &:hover {
+      background: $secondary;
+    }
+
+    &:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+    }
+  }
+
+  /* ========================== */
 
   .card-info {
     flex-grow: 1;
@@ -316,6 +368,22 @@ header {
     }
   }
 }
+
+.search-input {
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid $border;
+  background: $bg-light;
+  color: $text;
+  font-family: $font-sans;
+  width: 280px;
+
+  &:focus {
+    outline: none;
+    border-color: $primary;
+  }
+}
+
 
 body.light {
   header { @include component-theme($light-bg-dark, $light-text, $light-border); }
