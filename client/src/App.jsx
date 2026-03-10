@@ -25,7 +25,7 @@ function App() {
 
   // ====== Загрузка товаров ======
   const loadProducts = async () => {
-    const res = await fetch('http://localhost:3000/products', {
+    const res = await fetch('http://localhost:3000/api/products', {
       headers: {
         'Authorization': 'Bearer ' + token
       }
@@ -54,7 +54,7 @@ function App() {
 
   if (editingProduct) {
 
-    await fetch(`http://localhost:3000/products/${editingProduct.id}`, {
+    await fetch(`http://localhost:3000/api/products/${editingProduct.id}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -83,7 +83,7 @@ function App() {
 
   const deleteProduct = async (id) => {
     if (!window.confirm('Удалить товар?')) return;
-    await fetch(`http://localhost:3000/products/${id}`, {
+    await fetch(`http://localhost:3000/api/products/${id}`, {
       method: 'DELETE',
       headers: {
         'Authorization': 'Bearer ' + token

@@ -1,5 +1,5 @@
 // RegisterPage.jsx
-import { useState } from "react";
+import React, { useState } from "react";
 
 function RegisterPage({ setPage }) {
   const [login, setLogin] = useState("");

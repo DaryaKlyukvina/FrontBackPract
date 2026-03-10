@@ -1,7 +1,6 @@
 const express = require('express');
 const path = require('path');
 const cors = require('cors');
-const { nanoid } = require('nanoid'); // для генерации ID
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 
@@ -16,7 +15,7 @@ const jwt = require('jsonwebtoken');
 
 const SECRET = "super_secret_key";
 
-let users = [];
+//let users = [];
 /* =========================
    MIDDLEWARE
 ========================= */
@@ -27,7 +26,7 @@ app.use(express.static(path.join(__dirname)));
 
 /* =========================
    ДАННЫЕ
-========================= */
+========================= 
 let products = [
   { id: '1a', name: 'Рыбов', price: 500, category: 'Рыба', description: 'Вкусный, поверьте на слово', rating: 4, stock: 123 },
   { id: '2a', name: 'Акул', price: 650, category: 'Хищники', description: '...Вроде не кусается', rating: 4, stock: 67 },
@@ -35,7 +34,7 @@ let products = [
   { id: '4a', name: 'Килька', price: 599, category: 'Консервы', description: 'Не в томатном соусе', rating: 4, stock: 110 },
   { id: '5a', name: 'Крекер', price: 100000, category: 'Легендарные', description: 'Хрустит', rating: 5, stock: 1 },
 ];
-
+*/
 /* =========================
    РЕГИСТРАЦИЯ
 ========================= */
@@ -89,63 +88,6 @@ app.post('/auth/login', async (req, res) => {
 
 });
 
-
-/* =========================
-    ПРОВЕРКА ТОКЕНА (Мидлвейр для защищенных роутов)
-========================= */
-function authMiddleware(req, res, next) {
-
-  const header = req.headers.authorization;
-
-  if (!header) {
-    return res.status(401).json({ message: "Нет токена" });
-  }
-
-  const token = header.split(' ')[1];
-
-  try {
-
-    const decoded = jwt.verify(token, SECRET);
-    req.user = decoded;
-
-    next();
-
-  } catch {
-
-    res.status(401).json({ message: "Неверный токен" });
-
-  }
-}
-
-/* =========================
-    РОУТЫ ДЛЯ ТОВАРОВ (CRUD)
-========================= */
-app.post("/products", authMiddleware, (req, res) => {
-
-  const { name, price } = req.body;
-
-  const newProduct = {
-    id: Date.now(),
-    name,
-    price
-  };
-
-  products.push(newProduct);
-
-  res.json(newProduct);
-
-});
-
-app.delete("/products/:id", authMiddleware, (req, res) => {
-
-  const id = Number(req.params.id);
-
-  products = products.filter(product => product.id !== id);
-
-  res.json({ message: "Товар удалён" });
-
-});
-
 /* =========================
    SWAGGER
 ========================= */
@@ -158,18 +100,15 @@ const swaggerOptions = {
       description: 'API для управления товарами интернет-магазина',
     },
     servers: [
-      {
-        url: `http://localhost:${port}`,
-        description: 'Локальный сервер',
-      },
+      { url: `http://localhost:${port}`, description: 'Локальный сервер' },
     ],
   },
-  apis: ['./app.js'], // указываем текущий файл
+  apis: ['./routes/*.js'], // указываем файлы с роутами
 };
 
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-
+ 
 /**
  * @swagger
  * components:
@@ -374,7 +313,6 @@ app.listen(port, () => {
   console.log(`Сервер запущен на http://localhost:${port}`);
   console.log(`Swagger UI доступен на http://localhost:${port}/api-docs`);
 });
-
 
 
 
