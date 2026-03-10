@@ -2,8 +2,13 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import './style.scss'; 
 import Modal from './Modal';
+import LoginPage from "./LoginPage";
+import RegisterPage from "./RegisterPage";
+
 
 function App() {
+  const [token, setToken] = useState(localStorage.getItem("token"));
+  const [page, setPage] = useState("products"); 
   const [theme, setTheme] = useState('dark');
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
@@ -20,7 +25,11 @@ function App() {
 
   // ====== Загрузка товаров ======
   const loadProducts = async () => {
-    const res = await fetch('http://localhost:3000/products');
+    const res = await fetch('http://localhost:3000/products', {
+      headers: {
+        'Authorization': 'Bearer ' + token
+      }
+    });
     const data = await res.json();
     setProducts(data);
     setFilteredProducts(data);
@@ -42,27 +51,44 @@ function App() {
 
   // ====== CRUD ======
   const saveProduct = async (data) => {
-    if (editingProduct) {
-      await fetch(`http://localhost:3000/products/${editingProduct.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
-    } else {
-      await fetch('http://localhost:3000/products', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
-    }
-    setModalOpen(false);
-    setEditingProduct(null);
-    loadProducts();
-  };
+
+  if (editingProduct) {
+
+    await fetch(`http://localhost:3000/products/${editingProduct.id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      },
+      body: JSON.stringify(data)
+    });
+
+  } else {
+
+    await fetch('http://localhost:3000/products', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      },
+      body: JSON.stringify(data)
+    });
+
+  }
+
+  setModalOpen(false);
+  setEditingProduct(null);
+  loadProducts();
+};
 
   const deleteProduct = async (id) => {
     if (!window.confirm('Удалить товар?')) return;
-    await fetch(`http://localhost:3000/products/${id}`, { method: 'DELETE' });
+    await fetch(`http://localhost:3000/products/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': 'Bearer ' + token
+      }
+    });
     loadProducts();
   };
 
@@ -75,7 +101,14 @@ function App() {
       const full = Math.round(rating);
       return '⭐'.repeat(full) + '☆'.repeat(5 - full);
     };
+  
+  if (page === "login") {
+  return <LoginPage setToken={setToken} setPage={setPage} />;
+  }
 
+  if (page === "register") {
+    return <RegisterPage setPage={setPage} />;
+}
     return (
       <div className="card">
         <img src={product.image || `/pics/tovar${product.id}.jpg`} alt={product.name} className="card-image"/>
@@ -129,6 +162,22 @@ return (
       <button id="theme-switch" onClick={toggleTheme}>
         Темка
       </button>
+
+      {!token ? (
+        <>
+          <button class="logbtn" onClick={() => setPage("login")}>Вход</button>
+          <button class="logbtn" onClick={() => setPage("register")}>Регистрация</button>
+        </>
+      ) : (
+        <button
+          onClick={() => {
+            localStorage.removeItem("token");
+            setToken(null);
+          }}
+        >
+          Выйти
+        </button>
+      )}
     </header>
 
     {/* ===== MAIN ===== */}

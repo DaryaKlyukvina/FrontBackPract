@@ -143,9 +143,7 @@ hr {
   opacity: 0.5;
   cursor: not-allowed;
 }
-.card {
-  /* ========================== */
-}
+
 .card .card-info {
   flex-grow: 1;
   overflow: hidden;

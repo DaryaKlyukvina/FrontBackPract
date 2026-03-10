@@ -9,6 +9,15 @@ const app = express();
 const port = 3000;
 
 /* =========================
+   ПОЛЬЗОВАТЕЛИ И АУТЕНТИФИКАЦИЯ
+========================= */
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+
+const SECRET = "super_secret_key";
+
+let users = [];
+/* =========================
    MIDDLEWARE
 ========================= */
 app.use(cors());
@@ -26,6 +35,116 @@ let products = [
   { id: '4a', name: 'Килька', price: 599, category: 'Консервы', description: 'Не в томатном соусе', rating: 4, stock: 110 },
   { id: '5a', name: 'Крекер', price: 100000, category: 'Легендарные', description: 'Хрустит', rating: 5, stock: 1 },
 ];
+
+/* =========================
+   РЕГИСТРАЦИЯ
+========================= */
+app.post('/auth/register', async (req, res) => {
+  const { login, password } = req.body;
+
+  if (!login || !password) {
+    return res.status(400).json({ message: "Login и password обязательны" });
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  const newUser = {
+    id: Date.now(),
+    login,
+    password: hashedPassword
+  };
+
+  users.push(newUser);
+
+  res.status(201).json({ message: "Пользователь создан" });
+});
+
+
+/* =========================
+    ЛОГИН
+========================= */
+app.post('/auth/login', async (req, res) => {
+
+  const { login, password } = req.body;
+
+  const user = users.find(u => u.login === login);
+
+  if (!user) {
+    return res.status(401).json({ message: "Неверный логин" });
+  }
+
+  const valid = await bcrypt.compare(password, user.password);
+
+  if (!valid) {
+    return res.status(401).json({ message: "Неверный пароль" });
+  }
+
+  const token = jwt.sign(
+    { id: user.id, login: user.login },
+    SECRET,
+    { expiresIn: '1h' }
+  );
+
+  res.json({ token });
+
+});
+
+
+/* =========================
+    ПРОВЕРКА ТОКЕНА (Мидлвейр для защищенных роутов)
+========================= */
+function authMiddleware(req, res, next) {
+
+  const header = req.headers.authorization;
+
+  if (!header) {
+    return res.status(401).json({ message: "Нет токена" });
+  }
+
+  const token = header.split(' ')[1];
+
+  try {
+
+    const decoded = jwt.verify(token, SECRET);
+    req.user = decoded;
+
+    next();
+
+  } catch {
+
+    res.status(401).json({ message: "Неверный токен" });
+
+  }
+}
+
+/* =========================
+    РОУТЫ ДЛЯ ТОВАРОВ (CRUD)
+========================= */
+app.post("/products", authMiddleware, (req, res) => {
+
+  const { name, price } = req.body;
+
+  const newProduct = {
+    id: Date.now(),
+    name,
+    price
+  };
+
+  products.push(newProduct);
+
+  res.json(newProduct);
+
+});
+
+app.delete("/products/:id", authMiddleware, (req, res) => {
+
+  const id = Number(req.params.id);
+
+  products = products.filter(product => product.id !== id);
+
+  res.json({ message: "Товар удалён" });
+
+});
 
 /* =========================
    SWAGGER
@@ -313,8 +432,4 @@ app.get('/openlibrary/works/:id', async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: 'Ошибка при обращении к Open Library', error: error.message });
   }
-});
-
-app.listen(port, () => {
-  console.log(`Сервер: http://localhost:${port}`);
 });
