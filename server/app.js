@@ -7,6 +7,10 @@ const swaggerUi = require('swagger-ui-express');
 const app = express();
 const port = 3000;
 
+// Подключаем роуты
+const authRoutes = require('./routes/auth');
+const productRoutes = require('./routes/products');
+
 /* =========================
    ПОЛЬЗОВАТЕЛИ И АУТЕНТИФИКАЦИЯ
 ========================= */
@@ -15,26 +19,14 @@ const jwt = require('jsonwebtoken');
 
 const SECRET = "super_secret_key";
 
-//let users = [];
 /* =========================
    MIDDLEWARE
 ========================= */
-app.use(cors());
+app.use(cors()); // Разрешаем CORS для фронтенда
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname)));
 
-/* =========================
-   ДАННЫЕ
-========================= 
-let products = [
-  { id: '1a', name: 'Рыбов', price: 500, category: 'Рыба', description: 'Вкусный, поверьте на слово', rating: 4, stock: 123 },
-  { id: '2a', name: 'Акул', price: 650, category: 'Хищники', description: '...Вроде не кусается', rating: 4, stock: 67 },
-  { id: '3a', name: 'Медуз', price: 750, category: 'Морские', description: 'Это не желе', rating: 3, stock: 52 },
-  { id: '4a', name: 'Килька', price: 599, category: 'Консервы', description: 'Не в томатном соусе', rating: 4, stock: 110 },
-  { id: '5a', name: 'Крекер', price: 100000, category: 'Легендарные', description: 'Хрустит', rating: 5, stock: 1 },
-];
-*/
 /* =========================
    РЕГИСТРАЦИЯ
 ========================= */
@@ -87,6 +79,13 @@ app.post('/auth/login', async (req, res) => {
   res.json({ token });
 
 });
+
+/* =========================
+   РОУТЫ
+========================= */
+app.use('/api/auth', authRoutes);
+app.use('/api/products', productRoutes);
+
 
 /* =========================
    SWAGGER
