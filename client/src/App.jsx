@@ -102,13 +102,6 @@ function App() {
       return '⭐'.repeat(full) + '☆'.repeat(5 - full);
     };
   
-  if (page === "login") {
-  return <LoginPage setToken={setToken} setPage={setPage} />;
-  }
-
-  if (page === "register") {
-    return <RegisterPage setPage={setPage} />;
-}
     return (
       <div className="card">
         <img src={product.image || `/pics/tovar${product.id}.jpg`} alt={product.name} className="card-image"/>
@@ -139,15 +132,24 @@ function App() {
     );
   };
 
+    if (page === "login") {
+  return <LoginPage setToken={setToken} setPage={setPage} />;
+  }
+
+  if (page === "register") {
+    return <RegisterPage setPage={setPage} />;
+}
+
 return (
   <>
+  
     {/* ===== HEADER ===== */}
     <header className="header">
       <nav className="nav">
-        <a href="#home">Главная</a>
-        <a href="#about">Страница2</a>
-        <a href="#services">Страница3</a>
-        <a href="#contact">Страница4</a>
+        <a className="shapka" href="#home">Главная</a>
+        <a className="shapka" href="#about">Страница2</a>
+        <a className="shapka" href="#services">Страница3</a>
+        <a className="shapka" href="#contact">Страница4</a>
       </nav>
 
       <input
@@ -165,8 +167,8 @@ return (
 
       {!token ? (
         <>
-          <button class="logbtn" onClick={() => setPage("login")}>Вход</button>
-          <button class="logbtn" onClick={() => setPage("register")}>Регистрация</button>
+          <button className="logbtn" onClick={() => setPage("login")}>Вход</button>
+          <button className="logbtn" onClick={() => setPage("register")}>Регистрация</button>
         </>
       ) : (
         <button

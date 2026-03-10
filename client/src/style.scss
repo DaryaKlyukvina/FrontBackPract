@@ -462,6 +462,8 @@ header {
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
+  //justify-content: flex-end;
+
 
   .logo {
     font-size: 24px;
@@ -491,9 +493,16 @@ header {
     }
   }
 
+  .shapka{
+    float: left;
+  }
+  
   .logbtn {
     margin-left: 20px;
+  }
 
+  #theme-switch{
+    margin-left: 20px;
   }
 }
 
