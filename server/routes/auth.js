@@ -2,18 +2,19 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const { createUser, findUserByLogin } = require('../models/User');
+const { createUser, findUserByLogin, getUserSafe } = require('../models/User');
 
 const SECRET = "super_secret_key";
 
-router.post('/register', (req, res) => {
+router.post('/register', async (req, res) => {
   const { login, password } = req.body;
   if (!login || !password) return res.status(400).json({ message: "Login и password обязательны" });
+
   const exists = findUserByLogin(login);
   if (exists) return res.status(400).json({ message: "Пользователь уже существует" });
 
-  const user = createUser({ login, password });
-  res.status(201).json({ message: "Пользователь создан", userId: user.id });
+  const user = await createUser({ login, password });
+  res.status(201).json({ message: "Пользователь создан", user: getUserSafe(user) });
 });
 
 router.post('/login', async (req, res) => {
@@ -28,4 +29,20 @@ router.post('/login', async (req, res) => {
   res.json({ token });
 });
 
+function authMiddleware(req, res, next) {
+  const header = req.headers.authorization;
+  if (!header) return res.status(401).json({ message: "Нет токена" });
+
+  const token = header.split(' ')[1];
+
+  try {
+    const decoded = jwt.verify(token, SECRET);
+    req.user = decoded;
+    next();
+  } catch {
+    res.status(401).json({ message: "Неверный токен" });
+  }
+}
+
 module.exports = router;
+module.exports.authMiddleware = authMiddleware;
