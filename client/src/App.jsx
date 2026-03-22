@@ -5,10 +5,10 @@ import LoginPage from "./LoginPage";
 import RegisterPage from "./RegisterPage";
 import { AuthContext } from './AuthContext';
 import { ProtectedComponent } from './components/ProtectedRoute';
-import { api } from './api';
+import { api } from '../api/index'; // Убедись, что путь верный
 
 function App() {
-  const { user, logout, token } = useContext(AuthContext); // Берем данные из контекста
+  const { user, logout } = useContext(AuthContext); 
   const [page, setPage] = useState("products"); 
   const [theme, setTheme] = useState('dark');
   const [products, setProducts] = useState([]);
@@ -23,7 +23,6 @@ function App() {
 
   const toggleTheme = () => setTheme(prev => prev === 'dark' ? 'light' : 'dark');
 
-  // ====== Загрузка товаров через наш API (Задание №10) ======
   const loadProducts = async () => {
     try {
       const data = await api.getproducts();
@@ -34,11 +33,16 @@ function App() {
     }
   };
 
+  // ИСПРАВЛЕНИЕ: Загружаем только если юзер вошел
   useEffect(() => {
-    loadProducts();
-  }, [user]); // Перезагружаем при смене пользователя
+    if (user) {
+      loadProducts();
+    } else {
+      setProducts([]); // Очищаем список при выходе
+      setFilteredProducts([]);
+    }
+  }, [user]); 
 
-  // ====== Поиск ======
   useEffect(() => {
     const query = search.toLowerCase();
     const filtered = products.filter(
@@ -48,7 +52,6 @@ function App() {
     setFilteredProducts(filtered);
   }, [search, products]);
 
-  // ====== CRUD (Задание №11) ======
   const saveProduct = async (data) => {
     try {
       if (editingProduct) {
@@ -60,7 +63,7 @@ function App() {
       setEditingProduct(null);
       loadProducts();
     } catch (err) {
-      alert("Недостаточно прав для этого действия");
+      alert("Недостаточно прав");
     }
   };
 
@@ -74,7 +77,6 @@ function App() {
     }
   };
 
-  // ====== Карточка товара ======
   const ProductCard = ({ product }) => {
     const [bought, setBought] = useState(0);
     const [stock, setStock] = useState(product.stock || 0);
@@ -84,7 +86,7 @@ function App() {
         <img src={product.image || `/pics/tovar${product.id}.jpg`} alt={product.name} className="card-image"/>
         <h2 className='card-name'>{product.name}</h2>
         <p className="card-category">{product.category || '-'}</p>
-        <p className="card-price">Цена: {product.price} ₽</p>
+        <p className="card-price">{product.price} ₽</p>
         <p className="card-stock">В наличии: <span>{stock}</span></p>
 
         <div className="buy-block">
@@ -99,7 +101,6 @@ function App() {
           )}
         </div>
 
-        {/* Кнопки управления видны только персоналу (Задание №11) */}
         <div className="card-actions">
           <ProtectedComponent allowedRoles={['SELLER', 'ADMIN']}>
             <button onClick={() => { setEditingProduct(product); setModalOpen(true); }}>Ред</button>
@@ -132,7 +133,7 @@ function App() {
           onChange={e => setSearch(e.target.value)}
         />
 
-        <button id="theme-switch" onClick={toggleTheme}>Темка</button>
+        <button onClick={toggleTheme}>Темка</button>
 
         {!user ? (
           <>
@@ -149,7 +150,6 @@ function App() {
 
       <main>
         <section className="product-cards">
-          {/* Только Продавец или Админ могут добавлять товары */}
           <ProtectedComponent allowedRoles={['SELLER', 'ADMIN']}>
             <div className="card add-card" onClick={() => setModalOpen(true)}>+</div>
           </ProtectedComponent>

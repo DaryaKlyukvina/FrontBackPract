@@ -1,73 +1,60 @@
-// RegisterPage.jsx
 import React, { useState } from "react";
+import { api } from "../api/index"; 
 
 function RegisterPage({ setPage }) {
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
 
-  const registerUser = async () => {
+  const handleRegister = async () => {
     if (!login || !password) {
-      alert("Введите логин и пароль");
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      alert("Пароли не совпадают");
+      alert("Заполните все поля");
       return;
     }
 
     try {
-      const res = await fetch("http://localhost:3000/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ login, password }),
+      // ИСПРАВЛЕНИЕ: Отправляем и email, и login, 
+      // чтобы сервер точно нашел то, что ему нужно
+      await api.register({ 
+        email: login, 
+        login: login, 
+        password: password 
       });
-
-      if (!res.ok) {
-        const err = await res.json();
-        alert(err.message || "Ошибка регистрации");
-        return;
-      }
-
-      alert("Регистрация прошла успешно! Теперь войдите.");
+      
+      alert("Регистрация успешна! Теперь войдите.");
       setPage("login");
     } catch (error) {
-      console.error(error);
-      alert("Ошибка сервера");
+      console.error("Ошибка регистрации:", error);
+      // Выводим сообщение от сервера, если оно есть
+      const msg = error.response?.data?.message || "Ошибка данных (400) или сервера (500)";
+      alert(msg);
     }
   };
 
   return (
     <div className="auth-page">
       <h2>Регистрация</h2>
-
-      <input
-        placeholder="Login"
-        value={login}
-        onChange={(e) => setLogin(e.target.value)}
+      <input 
+        placeholder="Логин (email)" 
+        value={login} 
+        onChange={(e) => setLogin(e.target.value)} 
       />
-
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
+      <input 
+        type="password" 
+        placeholder="Пароль" 
+        value={password} 
+        onChange={(e) => setPassword(e.target.value)} 
       />
-
-      <input
-        type="password"
-        placeholder="Confirm Password"
-        value={confirmPassword}
-        onChange={(e) => setConfirmPassword(e.target.value)}
-      />
-
-      <button onClick={registerUser}>Зарегистрироваться</button>
+      
+      <button onClick={handleRegister}>Зарегистрироваться</button>
 
       <p>
-        Уже есть аккаунт?{" "}
+        Есть аккаунт?{" "}
         <button onClick={() => setPage("login")}>Войти</button>
       </p>
+      
+      <button onClick={() => setPage("products")} style={{marginTop: '10px'}}>
+        Назад к товарам
+      </button>
     </div>
   );
 }

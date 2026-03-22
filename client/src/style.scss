@@ -631,7 +631,7 @@ body.dark {
 ========================= */
 
 #product-form button[type="submit"] {
-  @include button-style($primary, $bg-dark, lighten($primary, 8%));
+  @include button-style($primary, $bg-dark, $secondary);
 }
 
 #product-form button[type="button"] {

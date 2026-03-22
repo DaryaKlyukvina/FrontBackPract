@@ -1,27 +1,21 @@
 {
   "users": [
     {
-      "id": 1,
-      "email": "admin@test.com",
-      "password": "$2b$10$6v7X9YjU.GfXbFvG9hH6u.G0vI/5vG.vG/vG/vG/vG/vG/vG/vG/v", 
-      "first_name": "test",
-      "last_name": "1",
+      "id": "1774212305609",
+      "email": "lol@test.com",
+      "login": "lol@test.com",
+      "password": "$2b$10$204PEsU2Ct0HnkFaSOiSfOWpVLzEzbxIQd4vcHf4rF8jV8Aap5Jnu",
+      "first_name": "",
+      "last_name": "",
       "role": "ADMIN"
     },
     {
-      "id": 2,
-      "email": "seller@test.com",
-      "password": "$2b$10$6v7X9YjU.GfXbFvG9hH6u.G0vI/5vG.vG/vG/vG/vG/vG/vG/vG/v",
-      "first_name": "test",
-      "last_name": "2",
-      "role": "SELLER"
-    },
-    {
-      "id": 3,
-      "email": "user@test.com",
-      "password": "$2b$10$6v7X9YjU.GfXbFvG9hH6u.G0vI/5vG.vG/vG/vG/vG/vG/vG/vG/v",
-      "first_name": "test",
-      "last_name": "3",
+      "id": "1774212871300",
+      "email": "lol2@test.com",
+      "login": "lol2@test.com",
+      "password": "$2b$10$npM8lBfpvGT/eV5CrX3g9uVss5rA3SnvlKI9ILaGB5mwT7Z8UujHe",
+      "first_name": "",
+      "last_name": "",
       "role": "USER"
     }
   ],

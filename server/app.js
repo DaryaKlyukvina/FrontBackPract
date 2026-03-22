@@ -7,47 +7,33 @@ const swaggerUi = require('swagger-ui-express');
 const app = express();
 const port = 3000;
 
-// 1. ИМПОРТ РОУТОВ (Вся логика регистрации, товаров и ролей теперь там)
+// 1. ИМПОРТ РОУТОВ
 const authRoutes = require('./routes/auth');
 const productRoutes = require('./routes/products');
 const userRoutes = require('./routes/users');
 
 /* =========================
-   MIDDLEWARE (Настройка среды)
+   MIDDLEWARE
 ========================= */
-app.use(cors()); // Чтобы React (порт 5173) мог общаться с Сервером (порт 3000)
-app.use(express.json()); // Для парсинга JSON в теле запроса
+app.use(cors()); 
+app.use(express.json()); 
 app.use(express.urlencoded({ extended: false }));
 
-// Раздача статических файлов (например, картинок товаров)
+// Раздача статических файлов
 app.use('/pics', express.static(path.join(__dirname, 'pics')));
 
 /* =========================
-   ПОДКЛЮЧЕНИЕ МАРШРУТОВ (API)
-========================= */
-// Все маршруты начинаются с /api согласно методичке
-app.use('/api/auth', authRoutes);    // Регистрация, Логин, Refresh (Задания 7, 8, 9)
-app.use('/api/products', productRoutes); // Работа с товарами (Задание 10, 11)
-app.use('/api/users', userRoutes);      // Список пользователей для Админа (Задание 11)
-
-/* =========================
-   SWAGGER (Документация с кнопкой Authorize)
+   SWAGGER (Настройка документации)
 ========================= */
 const swaggerOptions = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'API Интернет-магазина',
+      title: 'API Shop',
       version: '1.0.0',
-      description: 'Реализация практических работ №7-11 (JWT, RBAC, JSON DB)',
+      description: 'Документация API',
     },
-    servers: [
-      { 
-        url: `http://localhost:${port}`, 
-        description: 'Локальный сервер разработки' 
-      },
-    ],
-    // Настройка кнопки "Authorize" для JWT токенов
+    servers: [{ url: `http://localhost:${port}` }],
     components: {
       securitySchemes: {
         bearerAuth: {
@@ -57,19 +43,44 @@ const swaggerOptions = {
         }
       }
     },
-    security: [{ bearerAuth: [] }]
+    paths: {
+      '/api/products': {
+        get: {
+          summary: 'Список товаров',
+          responses: {
+            200: { description: 'Успешно' }
+          }
+        }
+      },
+      '/api/users': {
+        get: {
+          summary: 'Список пользователей (Admin)',
+          security: [{ bearerAuth: [] }],
+          responses: {
+            200: { description: 'Успешно' }
+          }
+        }
+      }
+    }
   },
-  apis: ['./routes/*.js'], // Ищем документацию в файлах роутов
+  apis: [], // Оставляем пустым! Мы всё прописали выше вручную.
 };
 
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 /* =========================
-   ВНЕШНИЕ API (Google Books / Open Library)
+   ПОДКЛЮЧЕНИЕ МАРШРУТОВ (API)
+========================= */
+app.use('/api/auth', authRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/users', userRoutes);
+
+/* =========================
+   ВНЕШНИЕ API
 ========================= */
 app.get('/api/external/google-books', async (req, res) => {
-  const q = req.query.q;
+  const { q } = req.query;
   if (!q) return res.status(400).json({ message: 'Параметр запроса q обязателен' });
 
   try {
@@ -87,7 +98,6 @@ app.get('/api/external/google-books', async (req, res) => {
 app.listen(port, () => {
   console.log(`\n--------------------------------------------`);
   console.log(`🚀 СЕРВЕР ЗАПУЩЕН: http://localhost:${port}`);
-  console.log(`📖 SWAGGER UI (Тесты): http://localhost:${port}/api-docs`);
-  console.log(`📁 БАЗА ДАННЫХ: database.json`);
+  console.log(`📖 SWAGGER UI: http://localhost:${port}/api-docs`);
   console.log(`--------------------------------------------\n`);
 });
