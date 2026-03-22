@@ -1,13 +1,14 @@
-import React from 'react';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import './style.scss'; 
 import Modal from './Modal';
 import LoginPage from "./LoginPage";
 import RegisterPage from "./RegisterPage";
-
+import { AuthContext } from './AuthContext';
+import { ProtectedComponent } from './components/ProtectedRoute';
+import { api } from './api';
 
 function App() {
-  const [token, setToken] = useState(localStorage.getItem("token"));
+  const { user, logout, token } = useContext(AuthContext); // Берем данные из контекста
   const [page, setPage] = useState("products"); 
   const [theme, setTheme] = useState('dark');
   const [products, setProducts] = useState([]);
@@ -16,28 +17,26 @@ function App() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
 
-  // ====== Тема ======
   useEffect(() => {
     document.body.className = theme;
   }, [theme]);
 
   const toggleTheme = () => setTheme(prev => prev === 'dark' ? 'light' : 'dark');
 
-  // ====== Загрузка товаров ======
+  // ====== Загрузка товаров через наш API (Задание №10) ======
   const loadProducts = async () => {
-    const res = await fetch('http://localhost:3000/api/products', {
-      headers: {
-        'Authorization': 'Bearer ' + token
-      }
-    });
-    const data = await res.json();
-    setProducts(data);
-    setFilteredProducts(data);
+    try {
+      const data = await api.getproducts();
+      setProducts(data);
+      setFilteredProducts(data);
+    } catch (err) {
+      console.error("Ошибка загрузки товаров", err);
+    }
   };
 
   useEffect(() => {
     loadProducts();
-  }, []);
+  }, [user]); // Перезагружаем при смене пользователя
 
   // ====== Поиск ======
   useEffect(() => {
@@ -49,47 +48,30 @@ function App() {
     setFilteredProducts(filtered);
   }, [search, products]);
 
-  // ====== CRUD ======
+  // ====== CRUD (Задание №11) ======
   const saveProduct = async (data) => {
-
-  if (editingProduct) {
-
-    await fetch(`http://localhost:3000/api/products/${editingProduct.id}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + token
-      },
-      body: JSON.stringify(data)
-    });
-
-  } else {
-
-    await fetch('http://localhost:3000/products', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + token
-      },
-      body: JSON.stringify(data)
-    });
-
-  }
-
-  setModalOpen(false);
-  setEditingProduct(null);
-  loadProducts();
-};
+    try {
+      if (editingProduct) {
+        await api.updateproduct(editingProduct.id, data);
+      } else {
+        await api.createproduct(data);
+      }
+      setModalOpen(false);
+      setEditingProduct(null);
+      loadProducts();
+    } catch (err) {
+      alert("Недостаточно прав для этого действия");
+    }
+  };
 
   const deleteProduct = async (id) => {
     if (!window.confirm('Удалить товар?')) return;
-    await fetch(`http://localhost:3000/api/products/${id}`, {
-      method: 'DELETE',
-      headers: {
-        'Authorization': 'Bearer ' + token
-      }
-    });
-    loadProducts();
+    try {
+      await api.deleteproduct(id);
+      loadProducts();
+    } catch (err) {
+      alert("Только администратор может удалять товары");
+    }
   };
 
   // ====== Карточка товара ======
@@ -97,24 +79,17 @@ function App() {
     const [bought, setBought] = useState(0);
     const [stock, setStock] = useState(product.stock || 0);
 
-    const renderStars = (rating = 0) => {
-      const full = Math.round(rating);
-      return '⭐'.repeat(full) + '☆'.repeat(5 - full);
-    };
-  
     return (
       <div className="card">
         <img src={product.image || `/pics/tovar${product.id}.jpg`} alt={product.name} className="card-image"/>
         <h2 className='card-name'>{product.name}</h2>
         <p className="card-category">{product.category || '-'}</p>
-        <div className="stars">{renderStars(product.rating)}</div>
-        <p className="card-info">{product.description || ''}</p>
         <p className="card-price">Цена: {product.price} ₽</p>
         <p className="card-stock">В наличии: <span>{stock}</span></p>
 
         <div className="buy-block">
           {bought === 0 ? (
-            <button onClick={() => setBought(1) & setStock(stock - 1)}>Купить</button>
+            <button onClick={() => { setBought(1); setStock(stock - 1); }}>Купить</button>
           ) : (
             <div className="counter">
               <button onClick={() => { if (bought > 0) { setBought(bought - 1); setStock(stock + 1); } }}>−</button>
@@ -124,97 +99,76 @@ function App() {
           )}
         </div>
 
+        {/* Кнопки управления видны только персоналу (Задание №11) */}
         <div className="card-actions">
-          <button onClick={() => { setEditingProduct(product); setModalOpen(true); }}>Ред</button>
-          <button onClick={() => deleteProduct(product.id)}>🗑</button>
+          <ProtectedComponent allowedRoles={['SELLER', 'ADMIN']}>
+            <button onClick={() => { setEditingProduct(product); setModalOpen(true); }}>Ред</button>
+          </ProtectedComponent>
+          
+          <ProtectedComponent allowedRoles={['ADMIN']}>
+            <button onClick={() => deleteProduct(product.id)}>🗑</button>
+          </ProtectedComponent>
         </div>
       </div>
     );
   };
 
-    if (page === "login") {
-  return <LoginPage setToken={setToken} setPage={setPage} />;
-  }
+  if (page === "login") return <LoginPage setPage={setPage} />;
+  if (page === "register") return <RegisterPage setPage={setPage} />;
 
-  if (page === "register") {
-    return <RegisterPage setPage={setPage} />;
-}
+  return (
+    <>
+      <header className="header">
+        <nav className="nav">
+          <a className="shapka" href="#home">Главная</a>
+          <a className="shapka" href="#contact">Товары</a>
+        </nav>
 
-return (
-  <>
-  
-    {/* ===== HEADER ===== */}
-    <header className="header">
-      <nav className="nav">
-        <a className="shapka" href="#home">Главная</a>
-        <a className="shapka" href="#about">Страница2</a>
-        <a className="shapka" href="#services">Страница3</a>
-        <a className="shapka" href="#contact">Страница4</a>
-      </nav>
+        <input
+          type="text"
+          placeholder="Поиск..."
+          className="search-input"
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+        />
 
-      <input
-        type="text"
-        id="search-input"
-        placeholder="Поиск товара..."
-        className="search-input"
-        value={search}
-        onChange={e => setSearch(e.target.value)}
-      />
+        <button id="theme-switch" onClick={toggleTheme}>Темка</button>
 
-      <button id="theme-switch" onClick={toggleTheme}>
-        Темка
-      </button>
+        {!user ? (
+          <>
+            <button className="logbtn" onClick={() => setPage("login")}>Вход</button>
+            <button className="logbtn" onClick={() => setPage("register")}>Регистрация</button>
+          </>
+        ) : (
+          <div className="user-info">
+            <span>{user.email} ({user.role})</span>
+            <button onClick={() => { logout(); setPage("products"); }}>Выйти</button>
+          </div>
+        )}
+      </header>
 
-      {!token ? (
-        <>
-          <button className="logbtn" onClick={() => setPage("login")}>Вход</button>
-          <button className="logbtn" onClick={() => setPage("register")}>Регистрация</button>
-        </>
-      ) : (
-        <button
-          onClick={() => {
-            localStorage.removeItem("token");
-            setToken(null);
-          }}
-        >
-          Выйти
-        </button>
+      <main>
+        <section className="product-cards">
+          {/* Только Продавец или Админ могут добавлять товары */}
+          <ProtectedComponent allowedRoles={['SELLER', 'ADMIN']}>
+            <div className="card add-card" onClick={() => setModalOpen(true)}>+</div>
+          </ProtectedComponent>
+
+          {filteredProducts.map(product => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+        </section>
+      </main>
+
+      {modalOpen && (
+        <Modal
+          product={editingProduct}
+          onClose={() => { setModalOpen(false); setEditingProduct(null); }}
+          onSave={saveProduct}
+        />
       )}
-    </header>
-
-    {/* ===== MAIN ===== */}
-    <main>
-      <section className="product-cards">
-        <div
-          className="card add-card"
-          onClick={() => setModalOpen(true)}
-        >
-          +
-        </div>
-
-        {filteredProducts.map(product => (
-          <ProductCard key={product.id} product={product} />
-        ))}
-      </section>
-    </main>
-
-    {/* ===== MODAL ===== */}
-    {modalOpen && (
-      <Modal
-        product={editingProduct}
-        onClose={() => {
-          setModalOpen(false);
-          setEditingProduct(null);
-        }}
-        onSave={saveProduct}
-      />
-    )}
-
-    {/* ===== FOOTER ===== */}
-    <footer className="footer">
-      <p>Футер. Все права защищены и тд.</p>
-    </footer>
-  </>
-);}
+    </>
+  );
+}
 
 export default App;

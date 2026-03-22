@@ -8,37 +8,131 @@ const {
   deleteProduct
 } = require('../models/Product');
 
-const { authMiddleware } = require('./auth'); // импорт middleware из auth.js
+// Импортируем middleware и функцию проверки ролей из auth.js
+const { authMiddleware, checkRole } = require('./auth');
 
-// GET /api/products - получить все товары
-router.get('/', (req, res) => {
-  const products = getAllProducts();
+/**
+ * @swagger
+ * tags:
+ * name: Products
+ * description: Управление товарами (Задания 10-11)
+ */
+
+/**
+ * @swagger
+ * /api/products:
+ * get:
+ * summary: Получить список всех товаров
+ * tags: [Products]
+ * security:
+ * - bearerAuth: []
+ * responses:
+ * 200:
+ * description: Список товаров получен
+ */
+router.get('/', authMiddleware, async (req, res) => {
+  const products = await getAllProducts(); // Добавили await
   res.json(products);
 });
 
-// GET /api/products/:id - получить товар по id
-router.get('/:id', (req, res) => {
-  const product = findProductById(req.params.id);
+/**
+ * @swagger
+ * /api/products/{id}:
+ * get:
+ * summary: Получить товар по ID
+ * tags: [Products]
+ * security:
+ * - bearerAuth: []
+ * parameters:
+ * - in: path
+ * name: id
+ * required: true
+ * schema:
+ * type: string
+ * responses:
+ * 200:
+ * description: Данные товара
+ * 404:
+ * description: Товар не найден
+ */
+router.get('/:id', authMiddleware, async (req, res) => {
+  const product = await findProductById(req.params.id);
   if (!product) return res.status(404).json({ message: "Товар не найден" });
   res.json(product);
 });
 
-// POST /api/products - создать новый товар (только для авторизованных)
-router.post('/', authMiddleware, (req, res) => {
-  const product = createProduct(req.body);
+/**
+ * @swagger
+ * /api/products:
+ * post:
+ * summary: Создать новый товар (Продавец/Админ)
+ * tags: [Products]
+ * security:
+ * - bearerAuth: []
+ * requestBody:
+ * required: true
+ * content:
+ * application/json:
+ * schema:
+ * type: object
+ * properties:
+ * name: { type: string }
+ * price: { type: number }
+ * category: { type: string }
+ * stock: { type: integer }
+ * responses:
+ * 201:
+ * description: Товар создан
+ * 403:
+ * description: Нет прав доступа
+ */
+router.post('/', authMiddleware, checkRole(['SELLER', 'ADMIN']), async (req, res) => {
+  const product = await createProduct(req.body);
   res.status(201).json(product);
 });
 
-// PATCH /api/products/:id - обновить товар (только для авторизованных)
-router.patch('/:id', authMiddleware, (req, res) => {
-  const product = updateProduct(req.params.id, req.body);
+/**
+ * @swagger
+ * /api/products/{id}:
+ * patch:
+ * summary: Обновить товар (Продавец/Админ)
+ * tags: [Products]
+ * security:
+ * - bearerAuth: []
+ * parameters:
+ * - in: path
+ * name: id
+ * required: true
+ * responses:
+ * 200:
+ * description: Товар обновлен
+ */
+router.patch('/:id', authMiddleware, checkRole(['SELLER', 'ADMIN']), async (req, res) => {
+  const product = await updateProduct(req.params.id, req.body);
   if (!product) return res.status(404).json({ message: "Товар не найден" });
   res.json(product);
 });
 
-// DELETE /api/products/:id - удалить товар (только для авторизованных)
-router.delete('/:id', authMiddleware, (req, res) => {
-  const success = deleteProduct(req.params.id);
+/**
+ * @swagger
+ * /api/products/{id}:
+ * delete:
+ * summary: Удалить товар (Только Админ)
+ * tags: [Products]
+ * security:
+ * - bearerAuth: []
+ * parameters:
+ * - in: path
+ * name: id
+ * required: true
+ * responses:
+ * 204:
+ * description: Удалено успешно
+ * 403:
+ * description: Недостаточно прав (не Админ)
+ */
+router.delete('/:id', authMiddleware, checkRole(['ADMIN']), async (req, res) => {
+  const success = await deleteProduct(req.params.id);
   if (!success) return res.status(404).json({ message: "Товар не найден" });
   res.status(204).send();
 });

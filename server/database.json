@@ -1,0 +1,29 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "email": "admin@test.com",
+      "password": "$2b$10$6v7X9YjU.GfXbFvG9hH6u.G0vI/5vG.vG/vG/vG/vG/vG/vG/vG/v", 
+      "first_name": "test",
+      "last_name": "1",
+      "role": "ADMIN"
+    },
+    {
+      "id": 2,
+      "email": "seller@test.com",
+      "password": "$2b$10$6v7X9YjU.GfXbFvG9hH6u.G0vI/5vG.vG/vG/vG/vG/vG/vG/vG/v",
+      "first_name": "test",
+      "last_name": "2",
+      "role": "SELLER"
+    },
+    {
+      "id": 3,
+      "email": "user@test.com",
+      "password": "$2b$10$6v7X9YjU.GfXbFvG9hH6u.G0vI/5vG.vG/vG/vG/vG/vG/vG/vG/v",
+      "first_name": "test",
+      "last_name": "3",
+      "role": "USER"
+    }
+  ],
+  "products": []
+}
