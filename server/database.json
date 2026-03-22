@@ -7,7 +7,7 @@
       "password": "$2b$10$204PEsU2Ct0HnkFaSOiSfOWpVLzEzbxIQd4vcHf4rF8jV8Aap5Jnu",
       "first_name": "",
       "last_name": "",
-      "role": "ADMIN"
+      "role": "SELLER"
     },
     {
       "id": "1774212871300",
@@ -16,7 +16,46 @@
       "password": "$2b$10$npM8lBfpvGT/eV5CrX3g9uVss5rA3SnvlKI9ILaGB5mwT7Z8UujHe",
       "first_name": "",
       "last_name": "",
-      "role": "USER"
+      "role": "USER",
+      "isBlocked": true
+    },
+    {
+      "id": "1774216737012",
+      "email": "admin@test.com",
+      "login": "admin@test.com",
+      "password": "$2b$10$Nd9xVIqtzUKVX1XxYDBeL.csruK8x3bNox/YeD9fQ88sqg/9eSMHi",
+      "first_name": "Ivan",
+      "last_name": "Ivanov",
+      "role": "SELLER",
+      "isBlocked": false
+    },
+    {
+      "id": "1774195633841",
+      "email": "admin2@test.com",
+      "login": "admin2@test.com",
+      "password": "$2b$10$7GFqHoz8Yt8I02qypbXTPOxGM2gQIoX8UUro2IOuCoJAPbwtIUrGK",
+      "first_name": "Ivan",
+      "last_name": "Ivanov",
+      "role": "ADMIN"
+    },
+    {
+      "id": "1774196224544",
+      "email": "sell@test.com",
+      "login": "sell@test.com",
+      "password": "$2b$10$mLApcsONMilIw/yJeWw9MehwBHVMCqXwLgNobw4PbHjRlTI4vIGFe",
+      "first_name": "",
+      "last_name": "",
+      "role": "SELLER"
+    },
+    {
+      "id": "1774195861869",
+      "email": "ar@test.com",
+      "login": "ar@test.com",
+      "password": "$2b$10$SEQszv1sjnwQwwKfO8698uDVFHO9bxozXEZxQ1S.xQ9g/pWzvAztG",
+      "first_name": "",
+      "last_name": "",
+      "role": "USER",
+      "isBlocked": false
     }
   ],
   "products": []

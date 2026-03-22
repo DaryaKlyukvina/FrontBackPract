@@ -3,9 +3,10 @@ import './style.scss';
 import Modal from './Modal';
 import LoginPage from "./LoginPage";
 import RegisterPage from "./RegisterPage";
+import AdminUsers from "./AdminUsers"; // Импорт твоей новой страницы
 import { AuthContext } from './AuthContext';
 import { ProtectedComponent } from './components/ProtectedRoute';
-import { api } from '../api/index'; // Убедись, что путь верный
+import { api } from '../api/index'; 
 
 function App() {
   const { user, logout } = useContext(AuthContext); 
@@ -33,12 +34,11 @@ function App() {
     }
   };
 
-  // ИСПРАВЛЕНИЕ: Загружаем только если юзер вошел
   useEffect(() => {
     if (user) {
       loadProducts();
     } else {
-      setProducts([]); // Очищаем список при выходе
+      setProducts([]); 
       setFilteredProducts([]);
     }
   }, [user]); 
@@ -114,14 +114,36 @@ function App() {
     );
   };
 
+  // --- ЛОГИКА ПЕРЕКЛЮЧЕНИЯ СТРАНИЦ ---
   if (page === "login") return <LoginPage setPage={setPage} />;
   if (page === "register") return <RegisterPage setPage={setPage} />;
+  
+  // Страница администрирования
+  if (page === "admin-users") {
+    return (
+      <>
+        <header className="header">
+           <button className="logbtn" onClick={() => setPage("products")}>← К товарам</button>
+           <h2 style={{color: 'white', margin: '0 auto'}}>Панель управления пользователями</h2>
+           <button onClick={toggleTheme}>Темка</button>
+           <div className="user-info">
+              <span>{user?.email}</span>
+              <button onClick={() => { logout(); setPage("products"); }}>Выйти</button>
+           </div>
+        </header>
+        <main>
+          <AdminUsers />
+        </main>
+      </>
+    );
+  }
 
+  // Главная страница (товары)
   return (
     <>
       <header className="header">
         <nav className="nav">
-          <a className="shapka" href="#home">Главная</a>
+          <a className="shapka" href="#home" onClick={() => setPage("products")}>Главная</a>
           <a className="shapka" href="#contact">Товары</a>
         </nav>
 
@@ -142,6 +164,17 @@ function App() {
           </>
         ) : (
           <div className="user-info">
+            {/* КНОПКА АДМИНА — Появляется только если роль ADMIN */}
+            {user.role === 'ADMIN' && (
+              <button 
+                className="logbtn" 
+                style={{backgroundColor: '#f1c40f', color: '#000', fontWeight: 'bold'}}
+                onClick={() => setPage("admin-users")}
+              >
+                Админка 👥
+              </button>
+            )}
+            
             <span>{user.email} ({user.role})</span>
             <button onClick={() => { logout(); setPage("products"); }}>Выйти</button>
           </div>

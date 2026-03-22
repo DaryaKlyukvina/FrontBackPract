@@ -39,7 +39,13 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
     const { email, password } = req.body;
     const user = await findUserByEmail(email);
+    
     if (!user) return res.status(401).json({ message: "Пользователь не найден" });
+    
+    // ПРОВЕРКА БЛОКИРОВКИ
+    if (user.isBlocked) {
+        return res.status(403).json({ message: "Ваш аккаунт заблокирован администратором" });
+    }
 
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) return res.status(401).json({ message: "Неверный пароль" });
